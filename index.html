@@ -507,7 +507,7 @@
           <div className="min-h-screen w-full text-slate-800 relative">
             <header className={`sticky top-0 z-30 backdrop-blur ${settings.party ? 'bg-gradient-to-r from-rose-200/60 via-amber-200/60 to-lime-200/60' : 'bg-white/40'} border-b border-white/20`}>
               <div className="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
-                <img src="https://www.mulesoft.com/sites/default/files/2022-03/NEXTVIEW-logo-POS-COMPLETE-transparent.png" alt="Nextview Consulting" className={`h-7 object-contain ${settings.party ? 'animate-huepulse' : ''}`} />
+                <img src="nextview-logo.png" alt="Nextview Consulting" className={`h-7 object-contain ${settings.party ? 'animate-huepulse' : ''}`} />
                 <h1 className="text-xl font-semibold">Nextview Wheel of Questions</h1>
                 <span className="ml-auto flex items-center gap-2">
                   <button onMouseDown={() => SFX.unlock()} onClick={() => setSettings(s => ({ ...s, sfx: !s.sfx }))} className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 bg-white/60 shadow-sm hover:shadow transition" title={settings.sfx ? "Disable sounds" : "Enable sounds"}>
