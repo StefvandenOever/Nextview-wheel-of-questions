@@ -1,430 +1,584 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Wheel of Questions</title>
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <style>
-    :root{
-      --bg:#0b1220;
-      --card:#0f172a;
-      --muted:#94a3b8;
-      --text:#e5e7eb;
-      --accent:#22d3ee;
-      --success:#22c55e;
-      --danger:#f43f5e;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji;
-      background: radial-gradient(1200px 800px at 70% -10%, #15213c 0%, #0b1220 60%);
-      color:var(--text);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:24px;
-    }
-    .app{
-      width:min(1200px,100%);
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:24px;
-    }
-    @media (max-width: 900px){
-      .app{grid-template-columns:1fr}
-    }
-    .card{
-      background:linear-gradient(180deg, #111a32 0%, #0f172a 100%);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,.25);
-      padding:20px;
-    }
-    .title{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      color:#cbd5e1;
-      font-weight:600;
-      letter-spacing:.2px;
-      text-transform:uppercase;
-      font-size:12px;
-    }
-    .slot{
-      position:relative;
-      display:flex;
-      align-items:center;
-      gap:16px;
-      border:1px dashed rgba(255,255,255,.15);
-      border-radius:16px;
-      padding:16px;
-      min-height:96px;
-      background:rgba(255,255,255,.02);
-      overflow:hidden;
-    }
-    .slot .icon{
-      flex:0 0 auto;
-      width:60px;
-      height:60px;
-      display:grid;
-      place-items:center;
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.35));
-    }
-    .slot .content{
-      flex:1 1 auto;
-      display:grid;
-      place-items:center; /* centers horizontally & vertically */
-      text-align:center;
-      padding:8px 4px;
-      min-height:60px;
-    }
-    .name{
-      font-size:28px;
-      font-weight:800;
-      line-height:1.1;
-      letter-spacing:.2px;
-      text-wrap:balance;
-    }
-    .question{
-      font-size:20px;
-      line-height:1.3;
-      text-wrap:balance;
-    }
-    .controls{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:14px;
-    }
-    button{
-      -webkit-tap-highlight-color: transparent;
-      border:none;
-      border-radius:14px;
-      padding:12px 16px;
-      color:#0b1220;
-      font-weight:700;
-      background:linear-gradient(180deg, #67e8f9, #22d3ee);
-      box-shadow: 0 6px 20px rgba(34,211,238,.35), inset 0 1px 0 rgba(255,255,255,.4);
-      cursor:pointer;
-    }
-    button.secondary{
-      background:linear-gradient(180deg, #e2e8f0, #cbd5e1);
-      box-shadow: 0 6px 20px rgba(148,163,184,.25), inset 0 1px 0 rgba(255,255,255,.5);
-    }
-    button:active{transform:translateY(1px)}
-    .wheel-wrap{
-      position:relative;
-      aspect-ratio:1/1;
-      width:100%;
-      max-width:560px;
-      margin-inline:auto;
-    }
-    canvas#wheel{width:100%; height:100%}
-    .pin{
-      position:absolute;
-      top:-6px; left:50%;
-      transform:translateX(-50%);
-      width:0; height:0;
-      border-left: 14px solid transparent;
-      border-right: 14px solid transparent;
-      border-bottom: 24px solid var(--accent);
-      filter: drop-shadow(0 6px 10px rgba(0,0,0,.35));
-    }
-    .label{
-      text-align:center;
-      margin-top:10px;
-      color:var(--muted);
-      font-size:14px;
-    }
-    .toast{
-      position:fixed; inset:auto 16px 16px 16px;
-      max-width:560px;
-      margin:0 auto;
-      padding:12px 14px;
-      background:rgba(15,23,42,.9);
-      border:1px solid rgba(255,255,255,.12);
-      color:#e2e8f0;
-      border-radius:12px;
-      display:none;
-    }
-    .ribbon{
-      position:absolute; inset:0;
-      pointer-events:none;
-    }
-    .confetti{position:absolute; inset:0; pointer-events:none;}
-  </style>
-</head>
-<body>
-<div class="app">
-  <div class="card">
-    <div class="title">Team member</div>
-    <div class="slot" id="name-slot" aria-live="polite">
-      <div class="icon"><img src="assets/person-outline.svg" width="60" height="60" alt="Person icon"></div>
-      <div class="content"><div class="name" id="name">—</div></div>
-    </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>Nextview Wheel of Questions</title>
 
-    <div style="height:16px"></div>
+    <!-- Tailwind CSS (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { theme: { extend: {} } };</script>
 
-    <div class="title">Question</div>
-    <div class="slot" id="question-slot" aria-live="polite">
-      <div class="icon"><img src="assets/question-outline.svg" width="60" height="60" alt="Question icon"></div>
-      <div class="content"><div class="question" id="question">Spin the wheel to get a question!</div></div>
-    </div>
+    <!-- React + ReactDOM (UMD) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 
-    <div class="controls">
-      <button id="spin">🎯 Spin</button>
-      <button class="secondary" id="newName">👤 New name</button>
-      <button class="secondary" id="newQuestion">❓ New question</button>
-      <button class="secondary" id="reset">♻️ Reset (allow repeats)</button>
-    </div>
-    <div class="label">Tip: add your own lists in <code>/data/colleagues.json</code> and <code>/data/questions.json</code>.</div>
-  </div>
+    <!-- Babel Standalone (compile JSX in-browser) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <div class="card">
-    <div class="wheel-wrap">
-      <canvas id="wheel" width="900" height="900"></canvas>
-      <div class="pin" aria-hidden="true"></div>
-      <canvas id="confetti" class="confetti"></canvas>
-    </div>
-    <div class="label">Wheel shows names; the slot shows both selections clearly centered.</div>
-  </div>
-</div>
+    <!-- framer-motion (UMD) -->
+    <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
 
-<div class="toast" id="toast" role="status"></div>
+    <!-- canvas-confetti (UMD) -->
+    <script src="https://unpkg.com/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
-<script>
-// --- Data loading ---
-async function loadJSON(path, fallback){
-  try{
-    const res = await fetch(path, {cache:'no-store'});
-    if(!res.ok) throw new Error(res.statusText);
-    return await res.json();
-  }catch(e){
-    console.warn('Using fallback for', path, e);
-    return fallback;
-  }
-}
-const fallbackNames = ["Stef", "Maya", "Jonas", "Aisha", "Luca", "Sven", "Nina", "Zoë", "Ibrahim", "Kat", "Hannah", "Arne"];
-const fallbackQuestions = ["What’s a small daily habit that makes your day better?", "If you could master one skill overnight, what would it be?", "What’s a food combo you secretly love?", "What song always boosts your mood?", "Which movie have you watched the most times — and why?", "What’s a totally irrational fear you have?", "What’s your most-used app that isn’t email or chat?", "What’s a tiny win from this week you’re proud of?", "Coffee order? Be specific.", "What’s a place you’d love to work from for a month?", "What’s your favorite board or card game?", "What was your first job, and what did it teach you?"];
+    <style>
+      html, body, #root { height: 100%; }
+      body { background: linear-gradient(135deg, #fae8ff, #ffe4e6, #fde68a); }
+      #error-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,.6); color: #fff;
+        display: none; align-items: center; justify-content: center; padding: 24px; z-index: 99999;
+      }
+      #error-overlay .box {
+        max-width: 900px; width: 100%; background: rgba(255,255,255,.08);
+        border: 1px solid rgba(255,255,255,.3); border-radius: 16px; padding: 20px;
+      }
+      #error-overlay pre { white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    </style>
+  </head>
+  <body class="min-h-screen">
+    <div id="root"></div>
 
-let NAMES = [];
-let QUESTIONS = [];
-let usedNames = new Set();
-let usedQuestions = new Set();
+    <!-- Friendly error overlay (so it's never a blank page) -->
+    <div id="error-overlay"><div class="box">
+      <div class="mb-2 font-semibold">An error occurred:</div>
+      <pre id="error-text"></pre>
+      <div class="text-xs opacity-80 mt-2">Open the browser console for details.</div>
+    </div></div>
+    <script>
+      (function(){
+        const overlay = document.getElementById('error-overlay');
+        const txt = document.getElementById('error-text');
+        window.addEventListener('error', (e) => {
+          try { txt.textContent = String(e.error ? (e.error.stack || e.error) : e.message || e); } catch { txt.textContent = 'Unknown error'; }
+          overlay.style.display = 'flex';
+        });
+        window.addEventListener('unhandledrejection', (e) => {
+          try { txt.textContent = String(e.reason && e.reason.stack ? e.reason.stack : e.reason || e); } catch { txt.textContent = 'Unknown promise rejection'; }
+          overlay.style.display = 'flex';
+        });
+      })();
+    </script>
 
-function sampleNoRepeat(list, usedSet){
-  if(usedSet.size >= list.length) return null;
-  let pick;
-  do { pick = list[Math.floor(Math.random()*list.length)]; } while(usedSet.has(pick));
-  usedSet.add(pick);
-  return pick;
-}
-function resetUsed(){
-  usedNames.clear();
-  usedQuestions.clear();
-  toast('Reset done. Items can repeat again.');
-}
+    <!-- App (compiled by Babel in the browser) -->
+    <script type="text/babel" data-presets="env,react">
+      const { useEffect, useMemo, useState } = React;
 
-// --- UI ---
-const elName = document.getElementById('name');
-const elQ = document.getElementById('question');
-const btnSpin = document.getElementById('spin');
-const btnNewName = document.getElementById('newName');
-const btnNewQ = document.getElementById('newQuestion');
-const btnReset = document.getElementById('reset');
-const toastEl = document.getElementById('toast');
+      // Robustly grab framer-motion globals, with no-op fallbacks
+      const FM = window.framerMotion || window.FramerMotion || window.framermotion || null;
+      const motion = FM ? FM.motion : new Proxy({}, { get: () => (props) => React.createElement('div', props, props && props.children) });
+      const AnimatePresence = FM ? FM.AnimatePresence : ({ children }) => React.createElement(React.Fragment, null, children);
 
-function toast(msg){
-  toastEl.textContent = msg;
-  toastEl.style.display = 'block';
-  setTimeout(()=>{ toastEl.style.display='none'; }, 1800);
-}
+      // Confetti fallback
+      const confetti = window.confetti || (() => {});
 
-// --- Wheel drawing & spin ---
-const wheel = document.getElementById('wheel');
-const ctx = wheel.getContext('2d');
-let currentAngle = 0;
-let spinning = false;
+      // Utils
+      const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-function drawWheel(names){
-  const n = Math.max(1, names.length);
-  const center = wheel.width/2;
-  ctx.clearRect(0,0,wheel.width,wheel.height);
+      // Icons (emoji-based, zero deps)
+      const Icon = ({ label, className, children }) => (
+        <span aria-label={label} role="img" className={`inline-block align-middle ${className ?? ""}`}>
+          {typeof children === "string" || typeof children === "number" ? children : String(children ?? "")}
+        </span>
+      );
+      const Icons = {
+        party: (cls) => <Icon label="party" className={cls}>🎉</Icon>,
+        users: (cls) => <Icon label="users" className={cls}>👥</Icon>,
+        plus: (cls) => <Icon label="add" className={cls}>＋</Icon>,
+        trash: (cls) => <Icon label="remove" className={cls}>🗑️</Icon>,
+        shuffle: (cls) => <Icon label="shuffle" className={cls}>🔀</Icon>,
+        volOn: (cls) => <Icon label="volume on" className={cls}>🔊</Icon>,
+        volOff: (cls) => <Icon label="volume off" className={cls}>🔇</Icon>,
+        download: (cls) => <Icon label="download" className={cls}>⬇️</Icon>,
+        upload: (cls) => <Icon label="upload" className={cls}>⬆️</Icon>,
+        eye: (cls) => <Icon label="eye" className={cls}>👁️</Icon>,
+        eyeOff: (cls) => <Icon label="hide" className={cls}>🙈</Icon>,
+        monitor: (cls) => <Icon label="test sound" className={cls}>📱</Icon>,
+      };
 
-  for(let i=0;i<n;i++){
-    const start = (i/n)*Math.PI*2 + currentAngle;
-    const end = ((i+1)/n)*Math.PI*2 + currentAngle;
-    ctx.beginPath();
-    ctx.moveTo(center,center);
-    ctx.arc(center,center, center-6, start, end);
-    ctx.closePath();
-    // alternating colors without external libs
-    const light = i%2===0 ? '#1f2a44' : '#18223a';
-    ctx.fillStyle = light;
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,.08)';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+      // Storage keys
+      const STORAGE_KEYS = { team: "woq_team_v4", questions: "woq_questions_v1", settings: "woq_settings_v4" };
 
-    // text
-    const mid = (start+end)/2;
-    const r = center*0.72;
-    const x = center + Math.cos(mid)*r;
-    const y = center + Math.sin(mid)*r;
-    ctx.save();
-    ctx.translate(x,y);
-    ctx.rotate(mid + Math.PI/2);
-    ctx.fillStyle = '#e5e7eb';
-    ctx.font = 'bold 28px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
-    const label = (names[i] || '').toString();
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    // wrap if needed
-    let drawLabel = label;
-    if(label.length > 14){
-      const a = label.slice(0, label.length/2).trim();
-      const b = label.slice(label.length/2).trim();
-      ctx.fillText(a, 0, -14);
-      ctx.fillText(b, 0, 14);
-    }else{
-      ctx.fillText(drawLabel, 0, 0);
-    }
-    ctx.restore();
-  }
+      // Defaults
+      const DEFAULT_QUESTIONS = [
+        "😀 What’s a small thing that made you smile recently?",
+        "🍝 What’s your go-to comfort food?",
+        "☕ Coffee, tea, or something else — what and how do you take it?",
+        "🧩 What’s a hobby you picked up lately?",
+        "🎬 What’s a movie you can quote from memory?",
+        "🌅 Morning person or night owl?",
+        "🗺️ If you could teleport anywhere for dinner tonight, where would you go?",
+        "🎵 What’s a song that’s been stuck in your head?",
+        "📍 What’s your favorite local spot in your city?",
+        "📚 What’s a book you recommend to almost everyone?",
+        "📱 What’s an app you love that others might not know?",
+        "😊 What’s your most-used emoji?",
+        "🎤 If you had a talk show, who’s your first guest?",
+        "🍍 Pineapple on pizza — yay or nay?",
+        "👶 What was your first job?",
+        "🛠️ What’s a skill you’d love to learn this year?",
+        "🛏️ What’s your ideal way to start a Saturday?",
+        "✈️ What’s a travel destination still on your list?",
+        "🎲 What’s your favorite board or video game?",
+        "🍣 What’s a food you’ll never get tired of?",
+        "🐶 Dogs, cats, or…?",
+        "💡 What’s a tiny work hack that helps you a lot?",
+        "📺 What’s your guilty-pleasure TV show?",
+        "🍁 What’s your favorite season and why?",
+        "🎶 If your life had a theme song, what would it be?",
+        "💶 What’s your best purchase under €50?",
+        "🏆 What’s something you’re proud of this month?",
+        "🏔️ Mountains or beach?",
+        "📸 What’s the last photo you took on your phone? (Describe it)",
+        "🧘 What’s your favorite way to recharge after work?",
+        "🇮🇹 What’s a cuisine you could eat for a week straight?",
+        "🍪 What’s a childhood snack you still love?",
+        "📈 What’s a small habit you’re trying to build?",
+        "🧪 What was your favorite subject in school?",
+        "🏙️ What’s a city you’d happily live in for a year?",
+        "🎧 What’s a podcast you enjoy?",
+        "🥐 Sweet or savory breakfast?",
+        "⚡ What’s a tiny thing that instantly improves your day?",
+        "✈️ What’s a memorable trip you’ve taken?",
+        "🎥 What’s a movie you wish you could watch again for the first time?",
+        "🏃 Are you into any sports (watching or playing)?",
+        "🍨 What’s your favorite ice cream flavor?",
+        "🔎 What’s something you collect or would like to collect?",
+        "✨ Who or what inspires you lately?",
+        "🎤 What’s your go-to karaoke song?",
+        "🪴 What’s your favorite indoor plant?",
+        "📺 What’s your comfort TV series?",
+        "🖥️ What’s a tech gadget you love?",
+        "👍 What’s a positive work habit you admire in others?",
+        "🏡 Share a fun fact about your hometown.",
+        "👃 What’s a smell that brings back good memories?",
+        "🍳 Are you into cooking — signature dish?",
+        "🗣️ What’s a language you’d like to learn?",
+        "🎲 What’s a small risk you took that paid off?",
+        "🚶 What’s your favorite way to move (walk, run, dance…)?",
+        "🎨 What’s a creative pursuit you enjoy?",
+        "🎉 What’s a tradition you love?",
+        "🎄 What’s your favorite public holiday and why?",
+        "📝 What’s a piece of advice you come back to?",
+        "🕳️ What’s a YouTube rabbit hole you’ve fallen into?",
+        "🥨 What’s a snack you always keep at home?",
+        "🥪 Early lunch or late lunch?",
+        "🧭 What’s one item on your bucket list this year?",
+        "📌 What’s a habit you’re proud of keeping?",
+        "🗺️ What’s your ideal vacation: plan-everything or go-with-the-flow?",
+        "🧠 What’s a niche interest you could talk about for hours?",
+        "⏳ If you could time-travel for a day, where/when would you go?",
+        "🤝 What’s a small act of kindness you’ve experienced?",
+        "🌧️ What’s your favorite rainy-day activity?",
+        "🍽️ What’s a local restaurant you love?",
+        "🎸 If you could instantly master a musical instrument, which one?",
+        "🏘️ What’s your favorite thing about your current city?",
+        "🥗 What’s a food you didn’t like but now love?",
+        "🗓️ What’s a weekend ritual you look forward to?",
+        "📱 What’s your most-used app on your phone?",
+        "🎲 What’s a childhood game you loved?",
+        "🚀 What’s a productivity tip that actually works for you?",
+        "🦊 If you had a mascot, what would it be?",
+        "🧴 What’s a small luxury you enjoy?",
+        "🎼 What’s a movie soundtrack you love?",
+        "🍳 What’s a dish you’ve perfected?",
+        "🛫 Window seat or aisle seat?",
+        "🙏 What’s a tiny thing you’re grateful for today?",
+        "👨‍👩‍👧 What’s a tradition from your family you’d keep forever?",
+        "🥞 What’s your favorite breakfast?",
+        "📺 What’s a series you recommend right now?",
+        "🎫 If you could attend any live event, what would it be?",
+        "🏫 What’s a skill you wish was taught in school?",
+        "🍰 What’s your favorite dessert?",
+        "🕯️ What’s a scent you love (candle, perfume, etc.)?",
+        "🧰 What’s a life hack you actually use?",
+        "🌳 What’s your favorite park or nature spot nearby?",
+        "🎯 What’s a small goal you’re working on?",
+      ];
+      const DEFAULT_TEAM = ["Alex", "Jamie", "Sam", "Taylor", "Jordan", "Casey", "Riley", "Morgan"];
 
-  // center cap
-  ctx.beginPath();
-  ctx.arc(center,center, 80, 0, Math.PI*2);
-  ctx.fillStyle = '#0f172a';
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,.2)';
-  ctx.lineWidth = 3;
-  ctx.stroke();
+      // Sound engine
+      class SoundEngine {
+        constructor(){ this.ctx = null; }
+        async unlock() {
+          if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+          if (this.ctx.state === "suspended") await this.ctx.resume();
+          const o = this.ctx.createOscillator();
+          const g = this.ctx.createGain();
+          g.gain.value = 0.0001; o.connect(g).connect(this.ctx.destination);
+          o.start(); o.stop(this.ctx.currentTime + 0.01);
+        }
+        tone({ freq = 880, dur = 0.08, type = "sine", vol = 0.06 } = {}) {
+          if (!this.ctx) return;
+          const o = this.ctx.createOscillator();
+          const g = this.ctx.createGain();
+          o.type = type; o.frequency.value = freq;
+          o.connect(g).connect(this.ctx.destination);
+          const now = this.ctx.currentTime;
+          g.gain.setValueAtTime(vol, now);
+          g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+          o.start(now); o.stop(now + dur);
+        }
+        tick(){ this.tone({ freq: 900, dur: 0.06, type: "triangle", vol: 0.05 }); }
+        win(){ [660,880,1320].forEach((f,i)=>setTimeout(()=>this.tone({freq:f,dur:0.09,type:"sine",vol:0.06}), i*90)); }
+      }
+      const SFX = new SoundEngine();
 
-  // center text
-  ctx.fillStyle = '#67e8f9';
-  ctx.font = '700 26px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('Spin!', center, center);
-}
+      // Reusable UI
+      function Panel({ title, icon, children }){
+        return (
+          <div className="rounded-3xl bg-white/70 backdrop-blur border border-white/30 shadow-xl p-5">
+            <div className="flex items-center gap-2 mb-4">{icon}<h2 className="text-lg font-semibold">{title}</h2></div>
+            {children}
+          </div>
+        );
+      }
 
-function spinToIndex(index, names){
-  if(spinning) return;
-  spinning = true;
-  const n = names.length;
-  // angle per slice
-  const slice = (Math.PI*2)/n;
-  // we want the picked index to end under the top pin (angle= -PI/2)
-  // current target angle for slice center
-  const target = -Math.PI/2 - (index+0.5)*slice;
-  // add rotations
-  const rotations = Math.PI*2* (4 + Math.random()*2);
-  const finalAngle = target - rotations;
+      function TeamManager({ team, onToggle, onAdd, onRemove, onSetAll }){
+        const [name, setName] = useState("");
+        const presentCount = team.filter(t => t.present).length;
+        return (
+          <div className="space-y-4">
+            <div className="flex gap-2">
+              <input value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { onAdd(name); setName(""); } }} placeholder="Add teammate name" className="flex-1 rounded-2xl px-4 py-2 bg-white/60 border border-white/40 focus:outline-none focus:ring-2 focus:ring-amber-400" />
+              <button onClick={() => { onAdd(name); setName(""); }} className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 bg-amber-500 text-white shadow hover:shadow-lg">{Icons.plus("text-base")} Add</button>
+            </div>
+            <div className="flex justify-between items-center text-sm text-slate-600">
+              <span>Present: <strong>{presentCount}</strong> / {team.length}</span>
+              <div className="flex gap-2">
+                <button onClick={() => onSetAll(true)} className="px-3 py-1 rounded-full bg-emerald-500/90 text-white text-xs shadow">All present</button>
+                <button onClick={() => onSetAll(false)} className="px-3 py-1 rounded-full bg-slate-400/90 text-white text-xs shadow">All away</button>
+              </div>
+            </div>
+            <div className="max-h-[380px] overflow-auto pr-1">
+              <ul className="divide-y divide-white/40">
+                {team.map(p => (
+                  <li key={p.id} className="flex items-center gap-3 py-2">
+                    <input type="checkbox" checked={p.present} onChange={() => onToggle(p.id)} className="accent-emerald-600 w-4 h-4" />
+                    <span className={`flex-1 ${p.present ? "" : "opacity-50"}`}>{p.name}</span>
+                    <button onClick={() => onRemove(p.id)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove">{Icons.trash("text-base")}</button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        );
+      }
 
-  const start = currentAngle;
-  const duration = 2200 + Math.random()*800;
-  const startTime = performance.now();
+      // Slot card: left emoji panel + centered content + spotlight overlay
+      function SlotCard({ bigText, smallText, emoji, highlight=false, spotlight=false }){
+        return (
+          <div className="relative flex-1">
+            <div className={`relative w-full min-h-[240px] sm:min-h-[260px] rounded-3xl p-4 sm:p-6 bg-white/90 backdrop-blur border border-white/40 shadow-2xl ring-4 ${highlight ? 'ring-amber-300/70' : 'ring-white/30'}`}>
+              <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,.6),transparent_40%),radial-gradient(circle_at_80%_30%,rgba(255,255,255,.35),transparent_45%)] rounded-3xl" />
+              <div className="relative flex items-stretch gap-4 h-full">
+                <div className="flex-shrink-0 w-20 sm:w-24 h-full min-h-[140px] grid place-items-center rounded-2xl bg-slate-100/80 border border-white/40 text-5xl select-none">
+                  {emoji || '🎰'}
+                </div>
+                <div className="flex-1 grid place-items-center text-center px-2">
+                  <div className="w-full">
+                    {React.createElement(motion.div || 'div', {
+                      key: bigText,
+                      initial: { y: 8, opacity: 0 },
+                      animate: { y: 0, opacity: 1 },
+                      transition: { type: 'spring', stiffness: 500, damping: 30 },
+                      className: "text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight md:leading-snug whitespace-pre-wrap break-words"
+                    }, bigText)}
+                    {smallText && React.createElement(motion.div || 'div', {
+                      key: smallText,
+                      initial: { opacity: 0 },
+                      animate: { opacity: 1 },
+                      transition: { duration: 0.25 },
+                      className: "mt-3 text-slate-600 text-base sm:text-lg whitespace-pre-wrap break-words"
+                    }, smallText)}
+                  </div>
+                </div>
+              </div>
+            </div>
 
-  function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
+            {React.createElement(AnimatePresence, null,
+              spotlight ? React.createElement('div', { className:"absolute inset-0 rounded-3xl bg-black/40 backdrop-blur-sm flex items-center justify-center z-10" },
+                React.createElement(motion.div || 'div', {
+                  initial:{ scale: 0.9, rotate: -2 },
+                  animate:{ scale: 1, rotate: 0 },
+                  exit:{ scale: 0.95, opacity: 0 },
+                  transition:{ type: 'spring', stiffness: 280, damping: 20 },
+                  className:"px-8 py-6 rounded-3xl bg-white/95 border border-white/40 shadow-2xl text-center"
+                },
+                  React.createElement('div', { className:"text-5xl mb-2" }, "👑"),
+                  React.createElement('div', { className:"text-2xl font-extrabold tracking-wide" }, bigText),
+                  React.createElement('div', { className:"mt-2 text-sm text-slate-500" }, "is on the spot!")
+                )
+              ) : null
+            )}
+          </div>
+        );
+      }
 
-  function tick(now){
-    const t = Math.min(1, (now - startTime)/duration);
-    const eased = easeOutCubic(t);
-    currentAngle = start + (finalAngle - start)*eased;
-    drawWheel(names);
-    if(t < 1){ requestAnimationFrame(tick); }
-    else {
-      spinning = false;
-      currentAngle = ((currentAngle % (Math.PI*2)) + Math.PI*2)%(Math.PI*2);
-      celebrate();
-    }
-  }
-  requestAnimationFrame(tick);
-}
+      function QuestionsEditor({ questions, setQuestions }){
+        const [draft, setDraft] = useState("");
+        function addQuestion(q){ const t = (q||"").trim(); if (!t) return; setQuestions([t, ...questions]); setDraft(""); }
+        function removeQuestion(idx){ setQuestions(questions.filter((_, i) => i !== idx)); }
+        function resetDefaults(){ if (confirm("Replace all questions with the default set?")) setQuestions(DEFAULT_QUESTIONS); }
+        return (
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <input value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addQuestion(draft)} placeholder="Add a question (tip: start with an emoji!)" className="flex-1 rounded-2xl px-4 py-2 bg-white/60 border border-white/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400" />
+              <button onClick={() => addQuestion(draft)} className="inline-flex items-center gap-2 rounded-2xl px-4 py-2 bg-fuchsia-600 text-white shadow hover:shadow-lg">{Icons.plus("text-base")} Add</button>
+            </div>
+            <div className="flex justify-between items-center text-sm text-slate-600">
+              <span>{questions.length} questions</span>
+              <button onClick={resetDefaults} className="px-3 py-1 rounded-full bg-slate-500/90 text-white text-xs shadow">Reset defaults</button>
+            </div>
+            <div className="max-h-[380px] overflow-auto pr-1">
+              <ul className="divide-y divide-white/40">
+                {questions.map((q, i) => (
+                  <li key={i} className="flex items-start gap-3 py-2">
+                    <span className="text-slate-500 text-xs mt-1">{i + 1}.</span>
+                    <span className="flex-1 text-sm">{q}</span>
+                    <button onClick={() => removeQuestion(i)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove">{Icons.trash("text-base")}</button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        );
+      }
 
-// --- Confetti ---
-const confettiCanvas = document.getElementById('confetti');
-const cctx = confettiCanvas.getContext('2d');
-function resizeConfetti(){
-  confettiCanvas.width = confettiCanvas.clientWidth;
-  confettiCanvas.height = confettiCanvas.clientHeight;
-}
-window.addEventListener('resize', resizeConfetti);
-resizeConfetti();
-let confettiParticles = [];
-function celebrate(){
-  // generate
-  const count = 120;
-  confettiParticles = Array.from({length:count}).map(()=> ({
-    x: confettiCanvas.width/2 + (Math.random()-0.5)*100,
-    y: -20,
-    vx: (Math.random()-0.5)*6,
-    vy: 4 + Math.random()*3,
-    r: 3 + Math.random()*4,
-    a: Math.random()*Math.PI*2,
-    s: 0.02 + Math.random()*0.06,
-  }));
-  let frame = 0;
-  function draw(){
-    frame++;
-    cctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
-    for(const p of confettiParticles){
-      p.x += p.vx;
-      p.y += p.vy;
-      p.a += p.s;
-      cctx.save();
-      cctx.translate(p.x,p.y);
-      cctx.rotate(p.a);
-      cctx.fillStyle = ['#22d3ee','#f472b6','#fb923c','#a78bfa','#34d399'][Math.floor(Math.random()*5)];
-      cctx.fillRect(-p.r,-p.r,p.r*2,p.r*2);
-      cctx.restore();
-    }
-    if(frame < 120) requestAnimationFrame(draw);
-  }
-  draw();
-}
+      // App
+      function App(){
+        const [team, setTeam] = useState(() => {
+          const raw = localStorage.getItem(STORAGE_KEYS.team);
+          if (raw) return JSON.parse(raw);
+          const id = () => (crypto.randomUUID ? crypto.randomUUID() : String(Math.random() * 1e9));
+          return DEFAULT_TEAM.map(n => ({ id: id(), name: n, present: true }));
+        });
+        const [questions, setQuestions] = useState(() => {
+          const raw = localStorage.getItem(STORAGE_KEYS.questions);
+          return raw ? JSON.parse(raw) : DEFAULT_QUESTIONS;
+        });
+        const [settings, setSettings] = useState(() => {
+          const raw = localStorage.getItem(STORAGE_KEYS.settings);
+          return raw ? JSON.parse(raw) : { sfx: true, showTeam: false, showQuestions: false };
+        });
 
-// --- App logic ---
-async function init(){
-  NAMES = await loadJSON('data/colleagues.json', fallbackNames);
-  QUESTIONS = await loadJSON('data/questions.json', fallbackQuestions);
-  drawWheel(NAMES);
-  // first picks
-  const firstName = sampleNoRepeat(NAMES, usedNames) || NAMES[0] || '—';
-  const firstQ = sampleNoRepeat(QUESTIONS, usedQuestions) || 'Ready? Spin the wheel!';
-  elName.textContent = firstName;
-  elQ.textContent = firstQ;
-}
-init();
+        const [selectedPerson, setSelectedPerson] = useState(null);
+        const [selectedQuestion, setSelectedQuestion] = useState(null);
 
-btnSpin.addEventListener('click', ()=>{
-  if(!NAMES.length) return;
-  // choose a name but keep slot centered content
-  const idx = Math.floor(Math.random()*NAMES.length);
-  const name = NAMES[idx];
-  spinToIndex(idx, NAMES);
-  // use no-repeat for name in slot, independent from visual wheel
-  const unique = sampleNoRepeat(NAMES, usedNames) || name;
-  elName.textContent = unique;
-  // also choose a new question (no repeat)
-  const q = sampleNoRepeat(QUESTIONS, usedQuestions) || QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)] || '—';
-  elQ.textContent = q;
-});
+        const [slotPersonRunning, setSlotPersonRunning] = useState(false);
+        const [slotQuestionRunning, setSlotQuestionRunning] = useState(false);
 
-btnNewName.addEventListener('click', ()=>{
-  const unique = sampleNoRepeat(NAMES, usedNames);
-  if(unique){ elName.textContent = unique; celebrate(); }
-  else toast('All names used. Hit Reset to allow repeats.');
-});
-btnNewQ.addEventListener('click', ()=>{
-  const q = sampleNoRepeat(QUESTIONS, usedQuestions);
-  if(q){ elQ.textContent = q; celebrate(); }
-  else toast('All questions used. Hit Reset to allow repeats.');
-});
-btnReset.addEventListener('click', resetUsed);
-</script>
-</body>
+        const [slotName, setSlotName] = useState("");
+        const [slotText, setSlotText] = useState("");
+
+        const [showSpotlight, setShowSpotlight] = useState(false);
+
+        useEffect(() => { localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(team)); }, [team]);
+        useEffect(() => { localStorage.setItem(STORAGE_KEYS.questions, JSON.stringify(questions)); }, [questions]);
+        useEffect(() => { localStorage.setItem(STORAGE_KEYS.settings, JSON.stringify(settings)); }, [settings]);
+        useEffect(() => {
+          const handler = () => { SFX.unlock().catch(()=>{}); };
+          window.addEventListener("pointerdown", handler, { once: true });
+          return () => window.removeEventListener("pointerdown", handler);
+        }, []);
+
+        const presentTeam = useMemo(() => team.filter(t => t.present), [team]);
+
+        // Confetti party
+        function megaParty(duration = 3800) {
+          const end = Date.now() + duration;
+          const colors = ["#ef4444","#f59e0b","#10b981","#3b82f6","#a855f7","#ec4899"];
+          (function frame(){
+            confetti({ particleCount: 4 + Math.floor(Math.random()*6), angle: 60 + Math.random()*60, spread: 70 + Math.random()*20, startVelocity: 55 + Math.random()*30, gravity: 0.7, ticks: 260, origin: { x: Math.random(), y: Math.random() * 0.3 }, colors, scalar: 0.9 + Math.random()*0.6, drift: (Math.random()-0.5)*1.2 });
+            if (Date.now() < end) requestAnimationFrame(frame);
+          })();
+          confetti({ particleCount: 200, spread: 75, origin: { x: 0.1, y: 0.6 }, colors });
+          confetti({ particleCount: 200, spread: 75, origin: { x: 0.9, y: 0.6 }, colors });
+        }
+
+        function pickRandomPersonSlot(){
+          if (!presentTeam.length || slotPersonRunning) return;
+          setSelectedQuestion(null);
+          setSlotPersonRunning(true);
+          let i = 0;
+          const interval = setInterval(() => {
+            const p = presentTeam[i % presentTeam.length];
+            setSlotName(p.name);
+            if (settings.sfx) SFX.tick();
+            i++;
+          }, 70);
+          const stopAfter = rand(1800, 2600);
+          setTimeout(() => {
+            clearInterval(interval);
+            const final = presentTeam[rand(0, presentTeam.length - 1)];
+            setSlotName(final.name);
+            setSelectedPerson(final);
+            setSlotPersonRunning(false);
+            setShowSpotlight(true);
+            megaParty(3800);
+            if (settings.sfx) SFX.win();
+            setTimeout(() => setShowSpotlight(false), 2600);
+          }, stopAfter);
+        }
+
+        function pickRandomQuestionSlot(){
+          if (!questions.length || slotQuestionRunning) return;
+          setSlotQuestionRunning(true);
+          let i = 0;
+          const interval = setInterval(() => {
+            const q = questions[i % questions.length];
+            setSlotText(q);
+            if (settings.sfx) SFX.tick();
+            i++;
+          }, 70);
+          const stopAfter = rand(1800, 2600);
+          setTimeout(() => {
+            clearInterval(interval);
+            const index = rand(0, questions.length - 1);
+            const final = questions[index];
+            setSlotText(final);
+            setSelectedQuestion(final);
+            setSlotQuestionRunning(false);
+            megaParty(4000);
+            if (settings.sfx) SFX.win();
+          }, stopAfter);
+        }
+
+        function importData(file){
+          const reader = new FileReader();
+          reader.onload = () => {
+            try {
+              const payload = JSON.parse(String(reader.result));
+              if (Array.isArray(payload.team)) {
+                const id = () => (crypto.randomUUID ? crypto.randomUUID() : String(Math.random() * 1e9));
+                setTeam(payload.team.map(n => ({
+                  id: id(),
+                  name: String(n.name ?? n),
+                  present: Boolean(n.present ?? true)
+                })));
+              }
+              if (Array.isArray(payload.questions)) setQuestions(payload.questions.map(String));
+            } catch {
+              alert("Couldn’t import JSON. Make sure it contains { team: [], questions: [] }.");
+            }
+          };
+          reader.readAsText(file);
+        }
+
+        function exportData(){
+          const blob = new Blob([JSON.stringify({ team: team.map(({ name, present }) => ({ name, present })), questions }, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url; a.download = "wheel-of-questions.json"; a.click(); URL.revokeObjectURL(url);
+        }
+
+        const layoutCols = settings.showTeam && settings.showQuestions ? "lg:grid-cols-3" : (settings.showTeam || settings.showQuestions) ? "lg:grid-cols-2" : "lg:grid-cols-1";
+
+        return (
+          <div className="min-h-screen w-full text-slate-800">
+            {/* Header */}
+            <header className="sticky top-0 z-30 backdrop-blur bg-white/40 border-b border-white/20">
+              <div className="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
+                <img src="https://www.mulesoft.com/sites/default/files/2022-03/NEXTVIEW-logo-POS-COMPLETE-transparent.png" alt="Nextview Consulting" className="h-7 object-contain" />
+                <h1 className="text-xl font-semibold">Nextview Wheel of Questions</h1>
+                <span className="ml-auto flex items-center gap-2">
+                  <button onMouseDown={() => SFX.unlock()} onClick={() => setSettings(s => ({ ...s, sfx: !s.sfx }))} className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 bg-white/60 shadow-sm hover:shadow transition" title={settings.sfx ? "Disable sounds" : "Enable sounds"}>
+                    {settings.sfx ? Icons.volOn("text-base") : Icons.volOff("text-base")}<span className="text-sm">SFX</span>
+                  </button>
+                  <button onClick={() => { SFX.unlock(); if (settings.sfx) SFX.tick(); }} className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 bg-white/60 shadow-sm hover:shadow transition" title="Test sound">
+                    {Icons.monitor("text-base")}<span className="text-sm">Test</span>
+                  </button>
+                  <button onClick={() => setSettings(s => ({ ...s, showTeam: !s.showTeam }))} className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 bg-white/60 shadow-sm hover:shadow transition" title={settings.showTeam ? "Hide team" : "Show team"}>
+                    {settings.showTeam ? Icons.eyeOff("text-base") : Icons.eye("text-base")}<span className="text-sm">Team</span>
+                  </button>
+                  <button onClick={() => setSettings(s => ({ ...s, showQuestions: !s.showQuestions }))} className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 bg-white/60 shadow-sm hover:shadow transition" title={settings.showQuestions ? "Hide questions" : "Show questions"}>
+                    {settings.showQuestions ? Icons.eyeOff("text-base") : Icons.eye("text-base")}<span className="text-sm">Questions</span>
+                  </button>
+                  <button onClick={exportData} className="inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 bg-white/60 shadow-sm hover:shadow transition" title="Export team & questions">
+                    {Icons.download("text-base")}<span className="text-sm">Export</span>
+                  </button>
+                  <label className="cursor-pointer inline-flex items-center gap-2 rounded-2xl px-3 py-1.5 bg-white/60 shadow-sm hover:shadow transition">
+                    {Icons.upload("text-base")}<span className="text-sm">Import</span>
+                    <input type="file" accept="application/json" className="hidden" onChange={(e) => e.target.files && importData(e.target.files[0])} />
+                  </label>
+                </span>
+              </div>
+            </header>
+
+            <main className={`mx-auto max-w-7xl px-4 py-8 grid grid-cols-1 ${layoutCols} gap-6`}>
+              {/* Team manager */}
+              {settings.showTeam && (
+                <section>
+                  <Panel title="Team" icon={Icons.users("text-lg")}>
+                    <TeamManager
+                      team={team}
+                      onToggle={(id) => setTeam(t => t.map(p => p.id === id ? ({ ...p, present: !p.present }) : p))}
+                      onAdd={(name)=>{ const trimmed = (name || "").trim(); if (trimmed) setTeam(t => [{ id: (crypto.randomUUID ? crypto.randomUUID() : String(Math.random() * 1e9)), name: trimmed, present: true }, ...t]); }}
+                      onRemove={(id)=>{ setTeam(t => t.filter(p => p.id !== id)); if(selectedPerson?.id===id) setSelectedPerson(null); }}
+                      onSetAll={(present) => setTeam(t => t.map(p => ({ ...p, present })))}
+                    />
+                  </Panel>
+                </section>
+              )}
+
+              {/* Slots */}
+              <section>
+                <Panel title="The Slots" icon={Icons.party("text-lg")}>
+                  <div className="grid grid-cols-1 gap-6">
+                    {/* Person Slot */}
+                    <div className="flex flex-col sm:flex-row items-stretch gap-4">
+                      <SlotCard
+                        bigText={slotName || "—"}
+                        smallText={selectedPerson ? "On the spot!" : "Tap PICK to choose a person"}
+                        emoji="👤"
+                        highlight={Boolean(selectedPerson)}
+                        spotlight={showSpotlight}
+                      />
+                      <div className="flex sm:flex-col gap-3 sm:w-40">
+                        <button onClick={pickRandomPersonSlot} disabled={slotPersonRunning || presentTeam.length===0} className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-white shadow hover:shadow-lg active:translate-y-[1px] ${slotPersonRunning || presentTeam.length===0 ? "bg-amber-300 cursor-not-allowed" : "bg-amber-500"}`}>
+                          {Icons.shuffle("text-base")} Pick person
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Question Slot */}
+                    <div className="flex flex-col sm:flex-row items-stretch gap-4">
+                      <SlotCard
+                        bigText={slotText || "Tap SPIN to get a question"}
+                        emoji="❓"
+                        highlight={Boolean(selectedQuestion)}
+                      />
+                      <div className="flex sm:flex-col gap-3 sm:w-40">
+                        <button onClick={pickRandomQuestionSlot} disabled={slotQuestionRunning || questions.length===0} className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-white shadow hover:shadow-lg active:translate-y-[1px] ${slotQuestionRunning || questions.length===0 ? "bg-fuchsia-300 cursor-not-allowed" : "bg-fuchsia-600"}`}>
+                          {Icons.shuffle("text-base")} Spin question
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </Panel>
+              </section>
+
+              {/* Questions editor */}
+              {settings.showQuestions && (
+                <section>
+                  <Panel title="Questions" icon={Icons.party("text-lg")}>
+                    <QuestionsEditor questions={questions} setQuestions={setQuestions} />
+                  </Panel>
+                </section>
+              )}
+            </main>
+
+            <footer className="mx-auto max-w-7xl px-4 pb-10 -mt-2 text-center text-xs text-slate-700">
+              Nextview Wheel of Questions · Export/Import to reuse your team & questions · Use Team/Questions toggles for distraction‑free mode.
+            </footer>
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+  </body>
 </html>
