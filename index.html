@@ -306,13 +306,14 @@
         );
       }
 
-      function SlotCard({ bigText, smallText, emoji, highlight=false, spotlight=false }){
+      
+      function SlotCard({ bigText, smallText, emoji, highlight=false, spotlight=false, spotlightIcon='👑', spotlightSubtitle='On the spot!', spotlightShowBig=true }){
         return (
           <div className="relative flex-1">
             <div className={`relative w-full min-h-[240px] sm:min-h-[260px] rounded-3xl p-4 sm:p-6 bg-white/90 backdrop-blur border border-white/40 shadow-2xl ring-4 ${highlight ? 'ring-amber-300/70' : 'ring-white/30'}`}>
               <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,.6),transparent_40%),radial-gradient(circle_at_80%_30%,rgba(255,255,255,.35),transparent_45%)] rounded-3xl" />
               <div className="relative flex items-stretch gap-4 h-full">
-                <div className="flex-shrink-0 w-20 sm:w-24 h-full min-h-[140px] grid place-items-center rounded-2xl bg-slate-100/80 border border-white/40 text-5xl select-none animate-floaty">
+                <div className="self-stretch flex-shrink-0 w-20 sm:w-24 flex items-center justify-center rounded-2xl bg-slate-100/80 border border-white/40 text-5xl select-none animate-floaty">
                   {emoji || '🎰'}
                 </div>
                 <div className="flex-1 grid place-items-center text-center px-2">
@@ -345,17 +346,16 @@
                   transition:{ type: 'spring', stiffness: 280, damping: 20 },
                   className:"px-8 py-6 rounded-3xl bg-white/95 border border-white/40 shadow-2xl text-center"
                 },
-                  React.createElement('div', { className:"text-5xl mb-2" }, "👑"),
-                  React.createElement('div', { className:"text-2xl font-extrabold tracking-wide" }, bigText),
-                  React.createElement('div', { className:"mt-2 text-sm text-slate-500" }, "is on the spot!")
+                  React.createElement('div', { className:"text-5xl mb-2" }, spotlightIcon),
+                  spotlightShowBig ? React.createElement('div', { className:"text-2xl font-extrabold tracking-wide" }, bigText) : null,
+                  React.createElement('div', { className:"mt-2 text-sm text-slate-500" }, spotlightSubtitle)
                 )
               ) : null
             )}
           </div>
         );
       }
-
-      function QuestionsEditor({ questions, setQuestions }){
+function QuestionsEditor({ questions, setQuestions }){
         const [draft, setDraft] = useState("");
         function addQuestion(q){ const t = (q||"").trim(); if (!t) return; setQuestions([t, ...questions]); setDraft(""); }
         function removeQuestion(idx){ setQuestions(questions.filter((_, i) => i !== idx)); }
@@ -411,6 +411,7 @@
         const [slotText, setSlotText] = useState("");
 
         const [showSpotlight, setShowSpotlight] = useState(false);
+        const [showQSpotlight, setShowQSpotlight] = useState(false);
 
         useEffect(() => { localStorage.setItem(STORAGE_KEYS.team, JSON.stringify(team)); }, [team]);
         useEffect(() => { localStorage.setItem(STORAGE_KEYS.questions, JSON.stringify(questions)); }, [questions]);
@@ -468,8 +469,10 @@
             setSlotText(final);
             setSelectedQuestion(final);
             setSlotQuestionRunning(false);
+            setShowQSpotlight(true);
             if (settings.party) PARTY.megaShow(5000);
             if (settings.sfx) { SFX.win(); SFX.crazy(); }
+            setTimeout(() => setShowQSpotlight(false), 2600);
           }, stopAfter);
         }
 
@@ -574,9 +577,14 @@
 
                     <div className="flex flex-col sm:flex-row items-stretch gap-4">
                       <SlotCard
-                        bigText={slotText || "Tap SPIN to get a question"}
+                        bigText={slotText || "—"}
+                        smallText={selectedQuestion ? "This is what we'd like to know from you" : "Tap SPIN to get a question"}
                         emoji="❓"
                         highlight={Boolean(selectedQuestion)}
+                        spotlight={showQSpotlight}
+                        spotlightIcon="❓"
+                        spotlightSubtitle="This is what we'd like to know from you"
+                        spotlightShowBig={false}
                       />
                       <div className="flex sm:flex-col gap-3 sm:w-40">
                         <button onClick={pickRandomQuestionSlot} disabled={slotQuestionRunning || questions.length===0} className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl text-white shadow hover:shadow-lg active:translate-y-[1px] ${slotQuestionRunning || questions.length===0 ? "bg-fuchsia-300 cursor-not-allowed" : "bg-fuchsia-600"}`}>
