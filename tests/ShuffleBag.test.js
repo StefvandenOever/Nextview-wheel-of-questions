@@ -1,4 +1,4 @@
-const ShuffleBag = require('../src/shuffleBag');
+import ShuffleBag from '../src/shuffleBag.js';
 
 describe('ShuffleBag', () => {
   test('provides each item once before repeating', () => {
