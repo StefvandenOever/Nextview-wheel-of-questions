@@ -1,4 +1,4 @@
-function secureRandomInt(max){
+export function secureRandomInt(max){
   if(!Number.isInteger(max) || max <= 0){
     throw new Error('max must be a positive integer');
   }
@@ -15,11 +15,4 @@ function secureRandomInt(max){
     value = arr[0];
   } while (value >= limit);
   return value % max;
-}
-
-if (typeof module !== 'undefined') {
-  module.exports = { secureRandomInt };
-}
-if (typeof window !== 'undefined') {
-  window.secureRandomInt = secureRandomInt;
 }

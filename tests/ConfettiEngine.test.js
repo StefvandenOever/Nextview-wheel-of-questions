@@ -1,5 +1,6 @@
-require('jest-canvas-mock');
-const ConfettiEngine = require('../ConfettiEngine');
+import 'jest-canvas-mock';
+import { jest } from '@jest/globals';
+import ConfettiEngine from '../ConfettiEngine.js';
 
 describe('ConfettiEngine addBurst', () => {
   test('creates the requested number of particles with expected properties', () => {

@@ -1,5 +1,5 @@
 // Zero-dependency confetti engine (Canvas 2D)
-const { secureRandomInt } = require('./src/random');
+import { secureRandomInt } from './src/random.js';
 
 class ConfettiEngine {
   constructor(canvas) {
@@ -135,4 +135,4 @@ class ConfettiEngine {
   }
 }
 
-module.exports = ConfettiEngine;
+export default ConfettiEngine;

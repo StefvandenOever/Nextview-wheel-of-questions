@@ -1,13 +1,15 @@
+import { secureRandomInt } from './random.js';
+
 // Generate a random integer using a cryptographically secure RNG if available,
 // but gracefully fall back to Math.random when `secureRandomInt` isn't defined.
 const randInt = (max) => {
-  if (typeof globalThis.secureRandomInt === 'function') {
-    return globalThis.secureRandomInt(max);
+  if (typeof secureRandomInt === 'function') {
+    return secureRandomInt(max);
   }
   return Math.floor(Math.random() * max);
 };
 
-class ShuffleBag {
+export default class ShuffleBag {
   constructor(items = []) {
     this.original = [...items];
     this.bag = [];
@@ -33,11 +35,4 @@ class ShuffleBag {
     }
     return this.bag.pop();
   }
-}
-
-if (typeof module !== 'undefined') {
-  module.exports = ShuffleBag;
-}
-if (typeof window !== 'undefined') {
-  window.ShuffleBag = ShuffleBag;
 }
