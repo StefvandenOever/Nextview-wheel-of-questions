@@ -78,6 +78,7 @@
     </script>
 
     <script src="src/random.js"></script>
+    <script src="src/shuffleBag.js"></script>
 
     <!-- App (compiled by Babel in the browser) -->
     <script type="text/babel" data-presets="env,react" defer>
@@ -443,7 +444,13 @@ function QuestionsEditor({ questions, setQuestions }){
           return () => window.removeEventListener("pointerdown", handler);
         }, []);
 
+        const personBag = useRef(new ShuffleBag());
+        const questionBag = useRef(new ShuffleBag());
+
         const presentTeam = useMemo(() => team.filter(t => t.present), [team]);
+
+        useEffect(() => { personBag.current.reset(presentTeam); }, [presentTeam]);
+        useEffect(() => { questionBag.current.reset(questions); }, [questions]);
 
         function pickRandomPersonSlot(){
           if (!presentTeam.length || slotPersonRunning) return;
@@ -460,7 +467,7 @@ function QuestionsEditor({ questions, setQuestions }){
           const stopAfter = secureRandomInt(800) + 1800;
           setTimeout(() => {
             clearInterval(interval);
-            const final = presentTeam[secureRandomInt(presentTeam.length)];
+            const final = personBag.current.next();
             setSlotName(final.name);
             setSelectedPerson(final);
             setSlotPersonRunning(false);
@@ -485,8 +492,7 @@ function QuestionsEditor({ questions, setQuestions }){
           const stopAfter = secureRandomInt(800) + 1800;
           setTimeout(() => {
             clearInterval(interval);
-            const index = secureRandomInt(questions.length);
-            const final = questions[index];
+            const final = questionBag.current.next();
             setSlotText(final);
             setSelectedQuestion(final);
             setSlotQuestionRunning(false);
