@@ -14,7 +14,8 @@
     "jest": "^30.0.5",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^30.0.5",
-    "tailwindcss": "^3.4.4"
+    "tailwindcss": "^3.4.4",
+    "@nicolo-ribaudo/chokidar-2": "2.1.8-no-fsevents.3"
   },
   "jest": {
     "testEnvironment": "jsdom"
