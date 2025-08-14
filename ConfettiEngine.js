@@ -1,4 +1,6 @@
 // Zero-dependency confetti engine (Canvas 2D)
+const { secureRandomInt } = require('./src/random');
+
 class ConfettiEngine {
   constructor(canvas) {
     this.canvas = canvas;
@@ -124,7 +126,7 @@ class ConfettiEngine {
     const end = Date.now() + duration;
     const loop = () => {
       this.addRain({ count: 6 });
-      if (Math.random() < 0.18) this.addComet();
+        if (secureRandomInt(100) < 18) this.addComet();
       if (Date.now() < end) requestAnimationFrame(loop);
     };
     this.addCannon({ side:'left' }); this.addCannon({ side:'right' });

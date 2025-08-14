@@ -212,7 +212,7 @@
           const end = Date.now() + duration;
           const loop = () => {
             this.addRain({ count: 6 });
-            if (Math.random() < 0.18) this.addComet();
+        if (secureRandomInt(100) < 18) this.addComet();
             if (Date.now() < end) requestAnimationFrame(loop);
           };
           this.addCannon({ side:'left' }); this.addCannon({ side:'right' });
@@ -460,10 +460,10 @@ function QuestionsEditor({ questions, setQuestions }){
             const p = presentTeam[i % presentTeam.length];
             setSlotName(p.name);
             if (settings.sfx) SFX.tick();
-            if (settings.party && Math.random() < 0.18) PARTY.addRain({ count: 4 });
+            if (settings.party && secureRandomInt(100) < 18) PARTY.addRain({ count: 4 });
             i++;
           }, 70);
-          const stopAfter = Math.floor(Math.random()*800) + 1800;
+          const stopAfter = secureRandomInt(800) + 1800;
           setTimeout(() => {
             clearInterval(interval);
             const final = personBag.current.next();
@@ -485,10 +485,10 @@ function QuestionsEditor({ questions, setQuestions }){
             const q = questions[i % questions.length];
             setSlotText(q);
             if (settings.sfx) SFX.tick();
-            if (settings.party && Math.random() < 0.18) PARTY.addRain({ count: 4 });
+            if (settings.party && secureRandomInt(100) < 18) PARTY.addRain({ count: 4 });
             i++;
           }, 70);
-          const stopAfter = Math.floor(Math.random()*800) + 1800;
+          const stopAfter = secureRandomInt(800) + 1800;
           setTimeout(() => {
             clearInterval(interval);
             const final = questionBag.current.next();
