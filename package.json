@@ -1,0 +1,20 @@
+{
+  "name": "nextview-wheel-of-questions",
+  "version": "1.0.0",
+  "description": "React/Tailwind single‑file app for team‑building. Now with **built‑in confetti** (no external libs) so it renders reliably on Safari and Chrome.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^30.0.5",
+    "jest-canvas-mock": "^2.5.2",
+    "jest-environment-jsdom": "^30.0.5"
+  },
+  "jest": {
+    "testEnvironment": "jsdom"
+  }
+}
