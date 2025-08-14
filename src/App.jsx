@@ -1,12 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { secureRandomInt } from "./random.js";
 import ShuffleBag from "./shuffleBag.js";
 import ConfettiEngine from "../ConfettiEngine.js";
-
-// framer-motion exposes different globals depending on the build.
-const FM = window.framerMotion || window.FramerMotion || window.framermotion || window.Motion || null;
-const motion = FM ? FM.motion : new Proxy({}, { get: () => (props) => React.createElement('div', props, props && props.children) });
-const AnimatePresence = FM ? FM.AnimatePresence : ({ children }) => React.createElement(React.Fragment, null, children);
 
 // Confetti engine shared module
 const PARTY = new ConfettiEngine(document.getElementById('party-canvas'));
@@ -115,14 +111,14 @@ function SlotCard({ bigText, smallText, emoji, highlight=false, spotlight=false,
           </div>
           <div className="flex-1 grid place-items-center text-center px-2">
             <div className="w-full">
-              {React.createElement(motion.div || 'div', {
+              {React.createElement(motion.div, {
                 key: bigText,
                 initial: { y: 8, opacity: 0, rotate: -0.5 },
                 animate: { y: 0, opacity: 1, rotate: 0 },
                 transition: { type: 'spring', stiffness: 500, damping: 30 },
                 className: "text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight md:leading-snug whitespace-pre-wrap break-words"
               }, bigText)}
-              {smallText && React.createElement(motion.div || 'div', {
+              {smallText && React.createElement(motion.div, {
                 key: smallText,
                 initial: { opacity: 0 },
                 animate: { opacity: 1 },
@@ -136,7 +132,7 @@ function SlotCard({ bigText, smallText, emoji, highlight=false, spotlight=false,
 
       {React.createElement(AnimatePresence, null,
         spotlight ? React.createElement('div', { className:"absolute inset-0 rounded-3xl bg-black/40 backdrop-blur-sm flex items-center justify-center z-10" },
-          React.createElement(motion.div || 'div', {
+          React.createElement(motion.div, {
             initial:{ scale: 0.9, rotate: -2 },
             animate:{ scale: 1, rotate: 0 },
             exit:{ scale: 0.95, opacity: 0 },
