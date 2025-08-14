@@ -12,6 +12,7 @@ React/Tailwind single‑file app for team‑building. Now with **built‑in conf
 - **Party Mode** toggle and **Test Party** button.
 - Optional **Team** and **Questions** side panels (toggle from the header).
 - **Sound effects** (enable/disable in header).
+- **SFX Test** button in the header to preview sound effects.
 
 ## 📦 Deploy / Run
 - Locally: just open `index.html` in a browser.  
