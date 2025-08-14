@@ -1,16 +1,11 @@
-// Attempt to use a cryptographically secure RNG if available, but
-// gracefully fall back to Math.random so the app can still function
-// in environments where `secureRandomInt` hasn't been defined yet.
-let secureRandomInt = (max) => Math.floor(Math.random() * max);
-if (typeof window !== 'undefined' && typeof window.secureRandomInt === 'function') {
-  secureRandomInt = window.secureRandomInt;
-} else if (typeof require === 'function') {
-  try {
-    secureRandomInt = require('./random').secureRandomInt;
-  } catch (e) {
-    // ignore and use the Math.random fallback
+// Generate a random integer using a cryptographically secure RNG if available,
+// but gracefully fall back to Math.random when `secureRandomInt` isn't defined.
+const randInt = (max) => {
+  if (typeof globalThis.secureRandomInt === 'function') {
+    return globalThis.secureRandomInt(max);
   }
-}
+  return Math.floor(Math.random() * max);
+};
 
 class ShuffleBag {
   constructor(items = []) {
@@ -27,7 +22,7 @@ class ShuffleBag {
 
   _shuffle() {
     for (let i = this.bag.length - 1; i > 0; i--) {
-      const j = secureRandomInt(i + 1);
+      const j = randInt(i + 1);
       [this.bag[i], this.bag[j]] = [this.bag[j], this.bag[i]];
     }
   }
