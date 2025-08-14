@@ -32,7 +32,7 @@ Later, click **Import** and select that JSON to restore your setup.
 
 > **Best practice:** export after any large edits, and keep the file in version control or cloud storage.
 
-## 🧠 Persistency (Browser Cache)
+## 🧠 Persistence (Browser Cache)
 - The app stores your data in **LocalStorage** under keys:
   - `woq_team_v4` (team list)
   - `woq_questions_v1` (questions)
