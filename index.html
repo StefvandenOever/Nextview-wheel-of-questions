@@ -6,6 +6,12 @@
     <title>Nextview Wheel of Questions — Party Mode (No‑CDN Confetti)</title>
 
     <!-- Tailwind CSS (CDN) -->
+
+    <script src="https://cdn.tailwindcss.com/3.4.1"
+            integrity="sha256-eTPiE7OfNDSwTrJNIZ8nlZapx9n3gz9+Oo2zzr5+adM="
+            crossorigin="anonymous"
+            onerror="this.removeAttribute('integrity'); this.src='vendor/tailwindcss.js';"></script>
+
     <script>tailwind.config = { theme: { extend: {
       keyframes: {
         huepulse: { '0%, 100%': { filter: 'hue-rotate(0deg)' }, '50%': { filter: 'hue-rotate(45deg)' } },
@@ -314,9 +320,6 @@
                     <span className={`flex-1 ${p.present ? "" : "opacity-50"}`}>{p.name}</span>
 
                     <button type="button" onClick={() => onRemove(p.id)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
-=======
-                    <button onClick={() => onRemove(p.id)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
-
                   </li>
                 ))}
               </ul>
@@ -397,8 +400,6 @@ function QuestionsEditor({ questions, setQuestions }){
                     <span className="flex-1 text-sm">{q}</span>
 
                     <button type="button" onClick={() => removeQuestion(i)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
-=======
-                    <button onClick={() => removeQuestion(i)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
 
                   </li>
                 ))}
