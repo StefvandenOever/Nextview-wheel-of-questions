@@ -4,12 +4,17 @@
   "description": "React/Tailwind single‑file app for team‑building. Now with **built‑in confetti** (no external libs) so it renders reliably on Safari and Chrome.",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "babel src/app.jsx --out-file dist/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.28.0",
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
+    "@babel/preset-react": "^7.27.1",
     "jest": "^30.0.5",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^30.0.5"
