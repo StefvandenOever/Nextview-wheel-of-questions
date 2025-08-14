@@ -12,6 +12,7 @@ React/Tailwind single‑file app for team‑building. Now with **built‑in conf
 - **Party Mode** toggle and **Test Party** button.
 - Optional **Team** and **Questions** side panels (toggle from the header).
 - **Sound effects** (enable/disable in header).
+- **SFX Test** button in the header to preview sound effects.
 
 ## 📦 Deploy / Run
 - Locally: just open `index.html` in a browser.  
@@ -32,7 +33,7 @@ Later, click **Import** and select that JSON to restore your setup.
 
 > **Best practice:** export after any large edits, and keep the file in version control or cloud storage.
 
-## 🧠 Persistency (Browser Cache)
+## 🧠 Persistence (Browser Cache)
 - The app stores your data in **LocalStorage** under keys:
   - `woq_team_v4` (team list)
   - `woq_questions_v1` (questions)

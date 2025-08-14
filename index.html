@@ -6,7 +6,10 @@
     <title>Nextview Wheel of Questions — Party Mode (No‑CDN Confetti)</title>
 
     <!-- Tailwind CSS (CDN) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"
+            integrity="sha256-eTPiE7OfNDSwTrJNIZ8nlZapx9n3gz9+Oo2zzr5+adM="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/tailwindcss.js';"></script>
     <script>tailwind.config = { theme: { extend: {
       keyframes: {
         huepulse: { '0%, 100%': { filter: 'hue-rotate(0deg)' }, '50%': { filter: 'hue-rotate(45deg)' } },
@@ -21,14 +24,26 @@
     } } };</script>
 
     <!-- React + ReactDOM (UMD) -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"
+            integrity="sha256-S0lp+k7zWUMk2ixteM6HZvu8L9Eh//OVrt+ZfbCpmgY="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/react.production.min.js';"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+            integrity="sha256-IXWO0ITNDjfnNXIu5POVfqlgYoop36bDzhodR6LW5Pc="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/react-dom.production.min.js';"></script>
 
     <!-- Babel Standalone (compile JSX in-browser) -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"
+            integrity="sha256-3jyRlQ0KMnYi6xl+R2rZQ5JO1xam48suhyxFJgS/Ups="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/babel.min.js';"></script>
 
     <!-- framer-motion (UMD) -->
-    <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+    <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"
+            integrity="sha256-OCEzkN+dIx4tkYIBp41/w69A+VAJqPD1wGImv1vXAw4="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/framer-motion.js';"></script>
 
     <style>
       html, body, #root { height: 100%; }
@@ -55,7 +70,7 @@
     <div id="error-overlay"><div class="box">
       <div class="mb-2 font-semibold">An error occurred:</div>
       <pre id="error-text"></pre>
-      <div className="text-xs opacity-80 mt-2">Open the browser console for details.</div>
+      <div class="text-xs opacity-80 mt-2">Open the browser console for details.</div>
     </div></div>
     <script>
       (function(){
@@ -253,7 +268,7 @@
         party: (cls) => <Icon label="party" className={cls}>🎉</Icon>,
         users: (cls) => <Icon label="users" className={cls}>👥</Icon>,
         plus: (cls) => <Icon label="add" className={cls}>＋</Icon>,
-        trash: (cls) => <Icon label="remove" className={cls}>🗑️</Icon>,
+        trash: (cls) => <Icon label="Remove" className={cls}>🗑️</Icon>,
         shuffle: (cls) => <Icon label="shuffle" className={cls}>🔀</Icon>,
         volOn: (cls) => <Icon label="volume on" className={cls}>🔊</Icon>,
         volOff: (cls) => <Icon label="volume off" className={cls}>🔇</Icon>,
@@ -297,7 +312,11 @@
                   <li key={p.id} className="flex items-center gap-3 py-2">
                     <input type="checkbox" checked={p.present} onChange={() => onToggle(p.id)} className="accent-emerald-600 w-4 h-4" />
                     <span className={`flex-1 ${p.present ? "" : "opacity-50"}`}>{p.name}</span>
+
                     <button type="button" onClick={() => onRemove(p.id)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
+=======
+                    <button onClick={() => onRemove(p.id)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
+
                   </li>
                 ))}
               </ul>
@@ -376,7 +395,11 @@ function QuestionsEditor({ questions, setQuestions }){
                   <li key={i} className="flex items-start gap-3 py-2">
                     <span className="text-slate-500 text-xs mt-1">{i + 1}.</span>
                     <span className="flex-1 text-sm">{q}</span>
+
                     <button type="button" onClick={() => removeQuestion(i)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
+=======
+                    <button onClick={() => removeQuestion(i)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
+
                   </li>
                 ))}
               </ul>
@@ -388,17 +411,28 @@ function QuestionsEditor({ questions, setQuestions }){
       function App(){
         const [team, setTeam] = useState(() => {
           const raw = localStorage.getItem(STORAGE_KEYS.team);
-          if (raw) return JSON.parse(raw);
+          if (raw) {
+            try { return JSON.parse(raw); }
+            catch { localStorage.removeItem(STORAGE_KEYS.team); }
+          }
           const id = () => (crypto.randomUUID ? crypto.randomUUID() : String(Math.random() * 1e9));
           return DEFAULT_TEAM.map(n => ({ id: id(), name: n, present: true }));
         });
         const [questions, setQuestions] = useState(() => {
           const raw = localStorage.getItem(STORAGE_KEYS.questions);
-          return raw ? JSON.parse(raw) : DEFAULT_QUESTIONS;
+          if (raw) {
+            try { return JSON.parse(raw); }
+            catch { localStorage.removeItem(STORAGE_KEYS.questions); }
+          }
+          return DEFAULT_QUESTIONS;
         });
         const [settings, setSettings] = useState(() => {
           const raw = localStorage.getItem(STORAGE_KEYS.settings);
-          return raw ? JSON.parse(raw) : { sfx: true, showTeam: false, showQuestions: false, party: true };
+          if (raw) {
+            try { return JSON.parse(raw); }
+            catch { localStorage.removeItem(STORAGE_KEYS.settings); }
+          }
+          return { sfx: true, showTeam: false, showQuestions: false, party: true };
         });
 
         const [selectedPerson, setSelectedPerson] = useState(null);
