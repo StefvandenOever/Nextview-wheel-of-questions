@@ -314,9 +314,6 @@
                     <span className={`flex-1 ${p.present ? "" : "opacity-50"}`}>{p.name}</span>
 
                     <button type="button" onClick={() => onRemove(p.id)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
-=======
-                    <button onClick={() => onRemove(p.id)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
-
                   </li>
                 ))}
               </ul>
@@ -397,8 +394,6 @@ function QuestionsEditor({ questions, setQuestions }){
                     <span className="flex-1 text-sm">{q}</span>
 
                     <button type="button" onClick={() => removeQuestion(i)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
-=======
-                    <button onClick={() => removeQuestion(i)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
 
                   </li>
                 ))}
