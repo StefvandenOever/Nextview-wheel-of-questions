@@ -77,12 +77,11 @@
       })();
     </script>
 
-    <script src="src/random.js"></script>
     <script src="src/shuffleBag.js"></script>
 
     <!-- App (compiled by Babel in the browser) -->
     <script type="text/babel" data-presets="env,react" defer>
-      const { useEffect, useMemo, useState } = React;
+      const { useEffect, useMemo, useRef, useState } = React;
       const FM = window.framerMotion || window.FramerMotion || window.framermotion || null;
       const motion = FM ? FM.motion : new Proxy({}, { get: () => (props) => React.createElement('div', props, props && props.children) });
       const AnimatePresence = FM ? FM.AnimatePresence : ({ children }) => React.createElement(React.Fragment, null, children);
