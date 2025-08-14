@@ -77,9 +77,11 @@
       })();
     </script>
 
+    <script src="src/shuffleBag.js"></script>
+
     <!-- App (compiled by Babel in the browser) -->
     <script type="text/babel" data-presets="env,react" defer>
-      const { useEffect, useMemo, useState } = React;
+      const { useEffect, useMemo, useRef, useState } = React;
       const FM = window.framerMotion || window.FramerMotion || window.framermotion || null;
       const motion = FM ? FM.motion : new Proxy({}, { get: () => (props) => React.createElement('div', props, props && props.children) });
       const AnimatePresence = FM ? FM.AnimatePresence : ({ children }) => React.createElement(React.Fragment, null, children);
@@ -441,7 +443,13 @@ function QuestionsEditor({ questions, setQuestions }){
           return () => window.removeEventListener("pointerdown", handler);
         }, []);
 
+        const personBag = useRef(new ShuffleBag());
+        const questionBag = useRef(new ShuffleBag());
+
         const presentTeam = useMemo(() => team.filter(t => t.present), [team]);
+
+        useEffect(() => { personBag.current.reset(presentTeam); }, [presentTeam]);
+        useEffect(() => { questionBag.current.reset(questions); }, [questions]);
 
         function pickRandomPersonSlot(){
           if (!presentTeam.length || slotPersonRunning) return;
@@ -458,7 +466,7 @@ function QuestionsEditor({ questions, setQuestions }){
           const stopAfter = Math.floor(Math.random()*800) + 1800;
           setTimeout(() => {
             clearInterval(interval);
-            const final = presentTeam[Math.floor(Math.random()*presentTeam.length)];
+            const final = personBag.current.next();
             setSlotName(final.name);
             setSelectedPerson(final);
             setSlotPersonRunning(false);
@@ -483,8 +491,7 @@ function QuestionsEditor({ questions, setQuestions }){
           const stopAfter = Math.floor(Math.random()*800) + 1800;
           setTimeout(() => {
             clearInterval(interval);
-            const index = Math.floor(Math.random()*questions.length);
-            const final = questions[index];
+            const final = questionBag.current.next();
             setSlotText(final);
             setSelectedQuestion(final);
             setSlotQuestionRunning(false);
