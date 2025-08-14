@@ -388,17 +388,28 @@ function QuestionsEditor({ questions, setQuestions }){
       function App(){
         const [team, setTeam] = useState(() => {
           const raw = localStorage.getItem(STORAGE_KEYS.team);
-          if (raw) return JSON.parse(raw);
+          if (raw) {
+            try { return JSON.parse(raw); }
+            catch { localStorage.removeItem(STORAGE_KEYS.team); }
+          }
           const id = () => (crypto.randomUUID ? crypto.randomUUID() : String(Math.random() * 1e9));
           return DEFAULT_TEAM.map(n => ({ id: id(), name: n, present: true }));
         });
         const [questions, setQuestions] = useState(() => {
           const raw = localStorage.getItem(STORAGE_KEYS.questions);
-          return raw ? JSON.parse(raw) : DEFAULT_QUESTIONS;
+          if (raw) {
+            try { return JSON.parse(raw); }
+            catch { localStorage.removeItem(STORAGE_KEYS.questions); }
+          }
+          return DEFAULT_QUESTIONS;
         });
         const [settings, setSettings] = useState(() => {
           const raw = localStorage.getItem(STORAGE_KEYS.settings);
-          return raw ? JSON.parse(raw) : { sfx: true, showTeam: false, showQuestions: false, party: true };
+          if (raw) {
+            try { return JSON.parse(raw); }
+            catch { localStorage.removeItem(STORAGE_KEYS.settings); }
+          }
+          return { sfx: true, showTeam: false, showQuestions: false, party: true };
         });
 
         const [selectedPerson, setSelectedPerson] = useState(null);
