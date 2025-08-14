@@ -1,10 +1,15 @@
-let secureRandomInt;
+// Attempt to use a cryptographically secure RNG if available, but
+// gracefully fall back to Math.random so the app can still function
+// in environments where `secureRandomInt` hasn't been defined yet.
+let secureRandomInt = (max) => Math.floor(Math.random() * max);
 if (typeof window !== 'undefined' && typeof window.secureRandomInt === 'function') {
   secureRandomInt = window.secureRandomInt;
 } else if (typeof require === 'function') {
-  secureRandomInt = require('./random').secureRandomInt;
-} else {
-  throw new Error('secureRandomInt is not available');
+  try {
+    secureRandomInt = require('./random').secureRandomInt;
+  } catch (e) {
+    // ignore and use the Math.random fallback
+  }
 }
 
 class ShuffleBag {
