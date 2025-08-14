@@ -6,7 +6,10 @@
     <title>Nextview Wheel of Questions — Party Mode (No‑CDN Confetti)</title>
 
     <!-- Tailwind CSS (CDN) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com"
+            integrity="sha256-eTPiE7OfNDSwTrJNIZ8nlZapx9n3gz9+Oo2zzr5+adM="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/tailwindcss.js';"></script>
     <script>tailwind.config = { theme: { extend: {
       keyframes: {
         huepulse: { '0%, 100%': { filter: 'hue-rotate(0deg)' }, '50%': { filter: 'hue-rotate(45deg)' } },
@@ -21,14 +24,26 @@
     } } };</script>
 
     <!-- React + ReactDOM (UMD) -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"
+            integrity="sha256-S0lp+k7zWUMk2ixteM6HZvu8L9Eh//OVrt+ZfbCpmgY="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/react.production.min.js';"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+            integrity="sha256-IXWO0ITNDjfnNXIu5POVfqlgYoop36bDzhodR6LW5Pc="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/react-dom.production.min.js';"></script>
 
     <!-- Babel Standalone (compile JSX in-browser) -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"
+            integrity="sha256-3jyRlQ0KMnYi6xl+R2rZQ5JO1xam48suhyxFJgS/Ups="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/babel.min.js';"></script>
 
     <!-- framer-motion (UMD) -->
-    <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"></script>
+    <script src="https://unpkg.com/framer-motion/dist/framer-motion.umd.js"
+            integrity="sha256-OCEzkN+dIx4tkYIBp41/w69A+VAJqPD1wGImv1vXAw4="
+            crossorigin="anonymous"
+            onerror="this.onerror=null;this.src='vendor/framer-motion.js';"></script>
 
     <style>
       html, body, #root { height: 100%; }
