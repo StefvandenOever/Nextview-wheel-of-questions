@@ -1,19 +1,26 @@
 // Zero-dependency confetti engine (Canvas 2D)
 import { secureRandomInt } from './src/random.js';
 
-class ConfettiEngine {
+// Prefer globalThis where available so the module can execute in both
+// browser and Node (jsdom) environments without throwing at import time.
+const _win = typeof window !== 'undefined' ? window : undefined;
+const _doc = typeof document !== 'undefined' ? document : undefined;
+
+export default class ConfettiEngine {
   constructor(canvas) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
-    this.dpr = Math.max(1, window.devicePixelRatio || 1);
+    this.dpr = Math.max(1, (_win && _win.devicePixelRatio) || 1);
     this.particles = [];
     this.running = false;
     this._resize = this.resize.bind(this);
     this.resize();
-    window.addEventListener('resize', this._resize);
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) this.stop(); else this.start();
-    });
+    if (_win) _win.addEventListener('resize', this._resize);
+    if (_doc) {
+      _doc.addEventListener('visibilitychange', () => {
+        if (_doc.hidden) this.stop(); else this.start();
+      });
+    }
     this.colors = ["#ef4444","#f59e0b","#10b981","#3b82f6","#a855f7","#ec4899","#22c55e","#eab308"];
   }
   resize(){
@@ -82,16 +89,22 @@ class ConfettiEngine {
   start(){
     if (this.running) return;
     this.running = true;
-    let last = performance.now();
+    const raf = typeof globalThis.requestAnimationFrame === 'function'
+      ? globalThis.requestAnimationFrame.bind(globalThis)
+      : (fn) => setTimeout(() => fn(Date.now()), 16);
+    const nowTime = () => (globalThis.performance && typeof globalThis.performance.now === 'function')
+      ? globalThis.performance.now()
+      : Date.now();
+    let last = nowTime();
     const step = (now) => {
       if (!this.running) return;
       const dt = Math.min(32, now - last); last = now;
       this.update(dt);
       this.draw();
-      if (this.particles.length > 0) requestAnimationFrame(step);
+      if (this.particles.length > 0) raf(step);
       else this.running = false;
     };
-    requestAnimationFrame(step);
+    raf(step);
   }
   stop(){ this.running = false; }
   update(dt){
@@ -134,5 +147,3 @@ class ConfettiEngine {
     loop();
   }
 }
-
-export default ConfettiEngine;
