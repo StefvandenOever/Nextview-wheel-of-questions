@@ -297,7 +297,7 @@
                   <li key={p.id} className="flex items-center gap-3 py-2">
                     <input type="checkbox" checked={p.present} onChange={() => onToggle(p.id)} className="accent-emerald-600 w-4 h-4" />
                     <span className={`flex-1 ${p.present ? "" : "opacity-50"}`}>{p.name}</span>
-                    <button type="button" onClick={() => onRemove(p.id)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove">{Icons.trash("text-base")}</button>
+                    <button type="button" onClick={() => onRemove(p.id)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
                   </li>
                 ))}
               </ul>
@@ -376,7 +376,7 @@ function QuestionsEditor({ questions, setQuestions }){
                   <li key={i} className="flex items-start gap-3 py-2">
                     <span className="text-slate-500 text-xs mt-1">{i + 1}.</span>
                     <span className="flex-1 text-sm">{q}</span>
-                    <button type="button" onClick={() => removeQuestion(i)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove">{Icons.trash("text-base")}</button>
+                    <button type="button" onClick={() => removeQuestion(i)} className="p-1.5 rounded-full hover:bg-rose-100/60" title="Remove" aria-label="Remove">{Icons.trash("text-base")}</button>
                   </li>
                 ))}
               </ul>
