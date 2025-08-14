@@ -77,6 +77,8 @@
       })();
     </script>
 
+    <script src="src/random.js"></script>
+
     <!-- App (compiled by Babel in the browser) -->
     <script type="text/babel" data-presets="env,react" defer>
       const { useEffect, useMemo, useState } = React;
@@ -210,7 +212,7 @@
           const end = Date.now() + duration;
           const loop = () => {
             this.addRain({ count: 6 });
-            if (Math.random() < 0.18) this.addComet();
+        if (secureRandomInt(100) < 18) this.addComet();
             if (Date.now() < end) requestAnimationFrame(loop);
           };
           this.addCannon({ side:'left' }); this.addCannon({ side:'right' });
@@ -452,13 +454,13 @@ function QuestionsEditor({ questions, setQuestions }){
             const p = presentTeam[i % presentTeam.length];
             setSlotName(p.name);
             if (settings.sfx) SFX.tick();
-            if (settings.party && Math.random() < 0.18) PARTY.addRain({ count: 4 });
+            if (settings.party && secureRandomInt(100) < 18) PARTY.addRain({ count: 4 });
             i++;
           }, 70);
-          const stopAfter = Math.floor(Math.random()*800) + 1800;
+          const stopAfter = secureRandomInt(800) + 1800;
           setTimeout(() => {
             clearInterval(interval);
-            const final = presentTeam[Math.floor(Math.random()*presentTeam.length)];
+            const final = presentTeam[secureRandomInt(presentTeam.length)];
             setSlotName(final.name);
             setSelectedPerson(final);
             setSlotPersonRunning(false);
@@ -477,13 +479,13 @@ function QuestionsEditor({ questions, setQuestions }){
             const q = questions[i % questions.length];
             setSlotText(q);
             if (settings.sfx) SFX.tick();
-            if (settings.party && Math.random() < 0.18) PARTY.addRain({ count: 4 });
+            if (settings.party && secureRandomInt(100) < 18) PARTY.addRain({ count: 4 });
             i++;
           }, 70);
-          const stopAfter = Math.floor(Math.random()*800) + 1800;
+          const stopAfter = secureRandomInt(800) + 1800;
           setTimeout(() => {
             clearInterval(interval);
-            const index = Math.floor(Math.random()*questions.length);
+            const index = secureRandomInt(questions.length);
             const final = questions[index];
             setSlotText(final);
             setSelectedQuestion(final);
