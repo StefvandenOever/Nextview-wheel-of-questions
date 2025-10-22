@@ -247,7 +247,11 @@ function QuestionsEditor({ questions, setQuestions }){
   const [draft, setDraft] = useState("");
   function addQuestion(q){ const t = (q||"").trim(); if (!t) return; setQuestions([t, ...questions]); setDraft(""); }
   function removeQuestion(idx){ setQuestions(questions.filter((_, i) => i !== idx)); }
-  function resetDefaults(){ if (confirm("Replace all questions with the default set?")) setQuestions(DEFAULT_QUESTIONS); }
+  function resetDefaults(){
+    if (!confirm("Replace all questions with the default set?")) return;
+    localStorage.removeItem(STORAGE_KEYS.questions);
+    setQuestions([...DEFAULT_QUESTIONS]);
+  }
   return (
     <div className="space-y-3">
       <div className="flex gap-2">
@@ -291,7 +295,7 @@ function App(){
       try { return JSON.parse(raw); }
       catch { localStorage.removeItem(STORAGE_KEYS.questions); }
     }
-    return DEFAULT_QUESTIONS;
+    return [...DEFAULT_QUESTIONS];
   });
   const [settings, setSettings] = useState(() => {
     const raw = localStorage.getItem(STORAGE_KEYS.settings);
